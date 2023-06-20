@@ -190,7 +190,7 @@ fun alert(msg: String, showDialog: Boolean, onDismiss: () -> Unit) {
 
 @Composable
 fun dialogBox(openDialog: MutableState<Boolean>){
-    var text by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
 
     if (openDialog.value) {
         AlertDialog(
@@ -198,16 +198,18 @@ fun dialogBox(openDialog: MutableState<Boolean>){
                 openDialog.value = false
             },
             title = {
-                Text(text = "Title")
+                Text(text = "Forgot Password")
             },
             text = {
                 Column() {
                     TextField(
-                        value = text,
-                        onValueChange = { text = it }
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text(text = "Email") },
+                        placeholder = { Text(text = "your@email.domain") },
+                        colors = TextFieldDefaults.textFieldColors(backgroundColor = White)
                     )
-                    Text("Custom Text")
-                    Checkbox(checked = false, onCheckedChange = {})
+
                 }
             },
             buttons = {
