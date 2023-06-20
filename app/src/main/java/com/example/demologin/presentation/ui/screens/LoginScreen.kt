@@ -1,6 +1,8 @@
 package com.example.demologin.presentation.ui.screens
 
+import android.content.Context
 import android.graphics.drawable.GradientDrawable
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,14 +18,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.DrawerValue
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalDrawer
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
@@ -31,10 +37,12 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.primarySurface
+import androidx.compose.material.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -46,6 +54,7 @@ import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -58,6 +67,15 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen() {
+    val showDialog = remember { mutableStateOf(false) }
+//    if(showDialog.value){
+//        ModalDrawerSample()
+//    }
+    if(showDialog.value){
+        alert(msg = "Hi deep",
+            showDialog = showDialog.value,
+        onDismiss = {showDialog.value = false})
+    }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column() {
             Column(
@@ -84,7 +102,9 @@ fun LoginScreen() {
                 contentAlignment = Alignment.Center
             ){
                 Column(verticalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = "Register",modifier = Modifier.align(CenterHorizontally).padding(0.dp,40.dp,0.dp,40.dp), color = Blue, fontSize = 16.sp)
+                    Text(text = "Register",modifier = Modifier
+                        .align(CenterHorizontally)
+                        .padding(0.dp, 40.dp, 0.dp, 40.dp), color = Blue, fontSize = 16.sp)
                     Text(text = "Forgot Password?",color = Gray, fontSize = 16.sp)
                 }
             }
@@ -126,7 +146,7 @@ fun LoginScreen() {
                 }
             }
             Button(
-                onClick = {},
+                onClick = { showDialog.value = true },
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -139,3 +159,58 @@ fun LoginScreen() {
         }
     }
 }
+
+@Composable
+fun alert(msg: String, showDialog: Boolean, onDismiss: () -> Unit) {
+    if(showDialog){
+        AlertDialog(
+            title = {
+                Text(text = msg)
+            },
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(text = "Dismiss")
+                }
+            },
+          dismissButton = {}
+        )
+    }
+}
+
+@Composable
+fun ModalDrawerSample() {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            Column {
+                Text("Text in Drawer")
+                Button(onClick = {
+                    scope.launch {
+                        drawerState.close()
+                    }
+                }) {
+                    Text("Close Drawer")
+                }
+            }
+        },
+        content = {
+            Column {
+                Text("Text in Bodycontext")
+                Button(onClick = {
+
+                    scope.launch {
+                        drawerState.open()
+                    }
+
+                }) {
+                    Text("Click to open")
+                }
+            }
+        }
+    )
+}
+
