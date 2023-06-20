@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +22,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.Checkbox
+import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -39,6 +42,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.primarySurface
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,20 +66,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.demologin.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun LoginScreen() {
+    val openDialog = remember { mutableStateOf(false) }
+    val text by remember { mutableStateOf("") }
+    if(openDialog.value){
+        dialogBox(openDialog = openDialog)
+    }
     val showDialog = remember { mutableStateOf(false) }
 //    if(showDialog.value){
 //        ModalDrawerSample()
 //    }
-    if(showDialog.value){
-        alert(msg = "Hi deep",
-            showDialog = showDialog.value,
-        onDismiss = {showDialog.value = false})
-    }
+//    if(showDialog.value){
+//        alert(msg = "Forgot Password",
+//            showDialog = showDialog.value,
+//        onDismiss = {showDialog.value = false})
+//    }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column() {
             Column(
@@ -146,7 +156,7 @@ fun LoginScreen() {
                 }
             }
             Button(
-                onClick = { showDialog.value = true },
+                onClick = { openDialog.value = true },
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -176,6 +186,46 @@ fun alert(msg: String, showDialog: Boolean, onDismiss: () -> Unit) {
           dismissButton = {}
         )
     }
+}
+
+@Composable
+fun dialogBox(openDialog: MutableState<Boolean>){
+    var text by remember { mutableStateOf("") }
+
+    if (openDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                openDialog.value = false
+            },
+            title = {
+                Text(text = "Title")
+            },
+            text = {
+                Column() {
+                    TextField(
+                        value = text,
+                        onValueChange = { text = it }
+                    )
+                    Text("Custom Text")
+                    Checkbox(checked = false, onCheckedChange = {})
+                }
+            },
+            buttons = {
+                Row(
+                    modifier = Modifier.padding(all = 8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { openDialog.value = false }
+                    ) {
+                        Text("Dismiss")
+                    }
+                }
+            }
+        )
+    }
+
 }
 
 @Composable
